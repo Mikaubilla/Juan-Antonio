@@ -1,5 +1,3 @@
-export const config = { runtime: "nodejs" };
-
 // === CHAT FRONTEND ===
 const chatContainer = document.getElementById("chat-container");
 const input = document.getElementById("user-input");
