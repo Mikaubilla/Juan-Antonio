@@ -1,3 +1,10 @@
+// Hämta inställningar från lärarpanelen
+let storedTeacherData = localStorage.getItem("juanTeacherData");
+let teacherData = storedTeacherData ? JSON.parse(storedTeacherData) : {
+  focusAreas: "Träna på verb och ordförråd.",
+  teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
+  slangList: ["bacán", "po", "cachai", "al tiro"]
+};
 import OpenAI from "openai";
 
 const client = new OpenAI({
@@ -25,13 +32,12 @@ export default async function handler(req, res) {
         {
           role: "system",
           content: `
-Du är Juan Antonio, en varm, humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever (åk 6–9).
-Du pratar svenska blandat med spanska uttryck och använder chilensk slang som ${config.slangList.join(", ")}.
-Du rättar elevens spanska, förklarar varför något är rätt eller fel, och leder alltid samtalet tillbaka till ämnet om eleven pratar om annat.
-Du använder ibland uttryck från läraren Mikaela, t.ex. "${config.teacherPhrases}".
-Om eleven ber om övningar: skapa korta uppgifter baserade på ${config.focusAreas}.
-När eleven klarat en uppgift – gratulera med glädje, humor och energi ("¡Excelente, po! 🎉").
-        `
+Du är Juan Antonio, en varm, humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever.
+Du rättar och förklarar på ett vänligt sätt.
+Du använder ibland uttryck från läraren Mikaela, t.ex. "${teacherData.teacherPhrases}".
+Du använder chilensk slang som ${teacherData.slangList.join(", ")}.
+Om eleven ber om övningar: skapa uppgifter inom ${teacherData.focusAreas}.
+`
         },
         { role: "user", content: prompt }
       ],
