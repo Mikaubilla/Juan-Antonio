@@ -1,0 +1,112 @@
+body {
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+  background-color: #f9fff9;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1rem;
+}
+
+.chat-box {
+  width: 90%;
+  max-width: 650px;
+  height: 60vh;
+  background-color: white;
+  border: 2px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 1rem;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.message {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.user div {
+  background-color: #d4edda;
+  border-radius: 12px 12px 0 12px;
+  padding: 0.6rem 1rem;
+  max-width: 75%;
+}
+
+.message.juan {
+  justify-content: flex-start;
+}
+
+.message.juan div {
+  background-color: #f1f8e9;
+  border-radius: 12px 12px 12px 0;
+  padding: 0.6rem 1rem;
+  max-width: 75%;
+}
+
+.message img.icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  margin-right: 0.6rem;
+}
+
+.input-area {
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  max-width: 650px;
+  gap: 0.5rem;
+}
+
+#input {
+  flex-grow: 1;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 2px solid #a5d6a7;
+  border-radius: 8px;
+}
+
+#sendBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+#sendBtn:hover {
+  background-color: #3e8e41;
+}
+
+#juanImage {
+  margin-top: 1rem;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #81c784;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+#juanImage:hover {
+  transform: scale(1.05);
+}
+
+.juan-label {
+  color: #2e6b41;
+  margin-top: 0.4rem;
+  font-weight: 600;
+}
