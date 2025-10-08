@@ -1,10 +1,20 @@
+export const config = { runtime: "nodejs" };
+
 // === CHAT FRONTEND ===
 const chatContainer = document.getElementById("chat-container");
 const input = document.getElementById("user-input");
 const sendButton = document.getElementById("send-btn");
 const juanImage = document.getElementById("juan-image");
+const teacherBtn = document.getElementById("teacher-btn");
+const teacherPanel = document.getElementById("teacher-panel");
+const loginBtn = document.getElementById("login-btn");
+const passwordInput = document.getElementById("password");
+const teacherContent = document.getElementById("teacher-content");
+const notesInput = document.getElementById("teacher-notes");
+const saveBtn = document.getElementById("save-notes");
+const savedMsg = document.getElementById("saved-msg");
 
-// 🔹 Lista på fakta och slang
+// === Fakta & slang ===
 const juanData = {
   slang: [
     { word: "bacán", meaning: "betyder 'superbra' eller 'cool' på chilenska" },
@@ -14,54 +24,60 @@ const juanData = {
   ],
   facts: [
     "Chile är världens längsta land från norr till söder 🇨🇱",
-    "I Chile dricker man mycket mate – en sorts örtte ☕️",
-    "Påskön (Isla de Pascua) tillhör Chile och är känd för sina stora stenstatyer 🗿",
-    "Chile har över 500 vulkaner, varav många fortfarande är aktiva 🌋",
-    "Chilenare älskar fotboll och grill – 'asado' är heligt! ⚽🔥"
+    "Påskön tillhör Chile och är känd för sina stenstatyer 🗿",
+    "Chilenare älskar 'asado' – grillkvällar med familjen 🔥",
+    "I Chile säger man ofta 'po' i slutet av meningar, cachai?"
   ]
 };
 
-// 🔹 Visa fakta eller slang slumpmässigt när man klickar på bilden
+// === Klick på bilden ===
 juanImage.addEventListener("click", () => {
   const randomType = Math.random() < 0.5 ? "slang" : "facts";
   const list = juanData[randomType];
-  const randomItem = list[Math.floor(Math.random() * list.length)];
-
-  const message =
-    randomType === "slang"
-      ? `💬 <b>${randomItem.word}</b>: ${randomItem.meaning}`
-      : `📘 ${randomItem}`;
-
-  addMessage("Juan Antonio", message);
+  const item = list[Math.floor(Math.random() * list.length)];
+  const msg = randomType === "slang"
+    ? `💬 <b>${item.word}</b>: ${item.meaning}`
+    : `📘 ${item}`;
+  addMessage("Juan Antonio", msg);
 });
 
-// === Funktion för att visa meddelanden i chatten ===
+// === Lärarpanel ===
+teacherBtn.addEventListener("click", () => teacherPanel.classList.remove("hidden"));
+loginBtn.addEventListener("click", () => {
+  if (passwordInput.value === "mika") {
+    teacherContent.classList.remove("hidden");
+  } else {
+    alert("Fel lösenord!");
+  }
+});
+
+saveBtn.addEventListener("click", () => {
+  localStorage.setItem("teacherNotes", notesInput.value);
+  savedMsg.classList.remove("hidden");
+  setTimeout(() => savedMsg.classList.add("hidden"), 2000);
+});
+
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("teacherNotes");
+  if (saved) notesInput.value = saved;
+});
+
+// === Meddelandefunktion ===
 function addMessage(sender, text) {
   const bubble = document.createElement("div");
   bubble.classList.add("message", sender === "user" ? "user" : "bot");
-
-  // Lägg till bild vid varje meddelande från Juan Antonio
-  if (sender === "Juan Antonio") {
-    const avatar = document.createElement("img");
-    avatar.src = "Juan Antonio (1).webp";
-    avatar.classList.add("avatar");
-    bubble.appendChild(avatar);
-  }
 
   const content = document.createElement("div");
   content.classList.add("text");
   content.innerHTML = text;
   bubble.appendChild(content);
-
   chatContainer.appendChild(bubble);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// === Skicka användarens text till API ===
 async function sendMessage() {
   const prompt = input.value.trim();
   if (!prompt) return;
-
   addMessage("user", prompt);
   input.value = "";
 
@@ -71,10 +87,9 @@ async function sendMessage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt })
     });
-
     const data = await res.json();
     addMessage("Juan Antonio", data.reply);
-  } catch (error) {
+  } catch {
     addMessage("Juan Antonio", "Oj! Något gick fel, po 😅 Försök igen.");
   }
 }
@@ -83,4 +98,3 @@ sendButton.addEventListener("click", sendMessage);
 input.addEventListener("keypress", (e) => {
   if (e.key === "Enter") sendMessage();
 });
-
