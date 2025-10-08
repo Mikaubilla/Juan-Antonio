@@ -48,3 +48,30 @@ window.onload = () => {
     "¡Hola! Soy Juan Antonio, tu amigo cóndor. Jag är här för att hjälpa dig med spanskan. ¿Cómo te llamas y en qué curso estás?"
   );
 };
+// Fakta och slanglistor
+const chileFacts = [
+  "Chile är det längsta landet i världen från norr till söder, cachai?",
+  "Chilenare säger ofta 'po' i slutet av meningar – det betyder egentligen bara 'pues'.",
+  "Empanadas de pino är en klassisk chilensk rätt med kött, ägg och oliver.",
+  "Santiago ligger omgiven av Anderna – ibland kan man åka skidor och bada samma dag!",
+  "Chilenare använder 'bacán' för att säga att något är riktigt bra!"
+];
+
+const chileSlang = [
+  "Po – kort för 'pues', används för att förstärka (t.ex. 'sí, po!')",
+  "Cachai – betyder 'fattar du?' eller 'hänger du med?'",
+  "Luca – slang för 1000 pesos 💸",
+  "Fome – tråkig eller ointressant",
+  "Al tiro – betyder 'på direkten!'"
+];
+
+function randomChileInfo() {
+  const all = [...chileFacts, ...chileSlang];
+  const random = all[Math.floor(Math.random() * all.length)];
+  appendMessage("juan", random);
+}
+
+// Klick på bilden
+document
+  .querySelector(".avatar")
+  ?.addEventListener("click", randomChileInfo);
