@@ -3,38 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juan Antonio – Spansk handledare 🇨🇱</title>
+  <title>Juan Antonio</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <img src="Juan Antonio (1).webp" id="juan-image" class="portrait" alt="Juan Antonio">
-      <h2>Juan Antonio, tu amigo cóndor! 🦅</h2>
-      <button id="teacher-btn">Lärarpanel</button>
-    </div>
+  <div id="container">
+    <aside id="sidebar">
+      <img id="juan-img" src="juan-antonio.png" alt="Juan Antonio" class="avatar" />
+      <h2>Juan Antonio, tu amigo cóndor! 🪶</h2>
+      <button id="teacher-login">Lärarpanel</button>
+      <div id="teacher-panel"></div>
+    </aside>
 
-    <div class="chat-section">
-      <div id="chat-container" class="chat-box"></div>
-      <div class="input-area">
-        <input id="user-input" placeholder="Skriv här..." />
+    <main id="chat">
+      <div id="messages"></div>
+      <div id="input-area">
+        <input id="user-input" type="text" placeholder="Skriv här..." />
         <button id="send-btn">Skicka</button>
       </div>
-    </div>
-  </div>
-
-  <div id="teacher-panel" class="hidden">
-    <div class="panel-box">
-      <h3>Lärarpanel</h3>
-      <label for="password">Lösenord:</label>
-      <input type="password" id="password" />
-      <button id="login-btn">Logga in</button>
-      <div id="teacher-content" class="hidden">
-        <textarea id="teacher-notes" placeholder="Skriv fokusområden, instruktioner mm..."></textarea>
-        <button id="save-notes">Spara</button>
-        <p id="saved-msg" class="hidden">Sparat! 💾</p>
-      </div>
-    </div>
+    </main>
   </div>
 
   <script src="chat.js"></script>
