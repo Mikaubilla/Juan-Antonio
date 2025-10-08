@@ -1,250 +1,123 @@
 body {
-  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-  background-color: #f9fff9;
-  color: #333;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f9fdf9;
   margin: 0;
-  padding: 1rem;
+  display: flex;
+  height: 100vh;
 }
 
-#main {
-  flex: 1;
+.container {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar {
+  width: 30%;
+  background: #e8f5e9;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.portrait {
+  width: 150px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.chat-section {
+  width: 70%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-#juanSide {
-  width: 280px;
-  text-align: center;
-  margin-left: 2rem;
-}
-
-#juanImage {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 5px solid #81c784;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-#juanImage:hover {
-  transform: scale(1.05);
+  justify-content: space-between;
 }
 
 .chat-box {
-  width: 90%;
-  max-width: 650px;
-  height: 60vh;
-  background-color: white;
-  border: 2px solid #a5d6a7;
-  border-radius: 12px;
+  flex: 1;
   padding: 1rem;
   overflow-y: auto;
-  margin-bottom: 1rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 .message {
-  margin: 0.5rem 0;
   display: flex;
-  align-items: flex-start;
+  margin: 0.5rem 0;
 }
 
 .message.user {
   justify-content: flex-end;
 }
 
-.message.user div {
-  background-color: #d4edda;
-  border-radius: 12px 12px 0 12px;
-  padding: 0.6rem 1rem;
-  max-width: 75%;
-}
-
-.message.juan {
+.message.bot {
   justify-content: flex-start;
 }
 
-.message.juan div {
-  background-color: #f1f8e9;
-  border-radius: 12px 12px 12px 0;
+.message .text {
+  background: #dcedc8;
   padding: 0.6rem 1rem;
-  max-width: 75%;
+  border-radius: 10px;
+  max-width: 60%;
 }
 
-.message img.icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  margin-right: 0.6rem;
+.message.user .text {
+  background: #aed581;
 }
 
 .input-area {
   display: flex;
-  justify-content: center;
-  width: 90%;
-  max-width: 650px;
-  gap: 0.5rem;
+  padding: 1rem;
+  background: #fff;
+  border-top: 1px solid #ccc;
 }
 
-#input {
-  flex-grow: 1;
+input {
+  flex: 1;
   padding: 0.6rem;
-  font-size: 1rem;
-  border: 2px solid #a5d6a7;
-  border-radius: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-#sendBtn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
+button {
+  margin-left: 0.5rem;
   padding: 0.6rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s;
-}
-
-#sendBtn:hover {
-  background-color: #3e8e41;
-}
-.remove-btn {
-  margin-left: 8px;
-  background-color: #ffb3b3;
   border: none;
-  border-radius: 6px;
+  background: #66bb6a;
+  color: white;
+  border-radius: 5px;
   cursor: pointer;
-  padding: 0.2rem 0.5rem;
 }
 
-.remove-btn:hover {
-  background-color: #ff8080;
+button:hover {
+  background: #57a65d;
 }
 
-#slangList {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-#slangList li {
-  background-color: #f1f8e9;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  margin: 0.4rem 0;
+/* Lärarpanel */
+#teacher-panel {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
-.confetti {
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2rem;
-  animation: pop 2s ease-out;
-  background-color: rgba(255, 255, 255, 0.85);
-  border: 2px solid #81c784;
-  padding: 1rem 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+.hidden { display: none; }
+
+.panel-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 350px;
 }
 
-@keyframes pop {
-  0% {
-    transform: translate(-50%, -50%) scale(0.5);
-    opacity: 0;
-  }
-  20% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -200%) scale(1);
-    opacity: 0;
-  }
-}
-#juan-image {
-  width: 130px;
-  border-radius: 50%;
-  float: right;
-  margin: 10px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-#juan-image:hover {
-  transform: scale(1.05);
-}
-
-.message {
-  display: flex;
-  align-items: flex-start;
-  margin: 10px 0;
-}
-
-.message.bot {
-  flex-direction: row;
-}
-
-.message.user {
-  justify-content: flex-end;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.text {
-  background-color: #e8f5e9;
-  padding: 10px 15px;
-  border-radius: 12px;
-  max-width: 75%;
-  font-family: "Arial", sans-serif;
-}
-.teacher-box {
-  background: #fff9e6;
-  border: 1px solid #e0d2b8;
-  padding: 15px;
-  margin: 15px auto;
-  border-radius: 12px;
-  width: 300px;
-  text-align: left;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.teacher-box h3 {
-  margin-top: 0;
-  color: #7a4e0d;
-}
-
-.teacher-box input,
-.teacher-box textarea {
+#teacher-notes {
   width: 100%;
-  margin-bottom: 8px;
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  height: 150px;
+  margin-top: 0.5rem;
 }
 
-.teacher-box button {
-  background-color: #6c9e58;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.teacher-box button:hover {
-  background-color: #558843;
+#saved-msg {
+  color: green;
+  font-weight: bold;
+  margin-top: 0.5rem;
 }
