@@ -1,22 +1,8 @@
-// Hämta inställningar från lärarpanelen
-let storedTeacherData = localStorage.getItem("juanTeacherData");
-let teacherData = storedTeacherData ? JSON.parse(storedTeacherData) : {
-  focusAreas: "Träna på verb och ordförråd.",
-  teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
-  slangList: ["bacán", "po", "cachai", "al tiro"]
-};
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 });
-
-// Hårdkodade värden hämtas från Edge Config men kan sättas här för nu
-const config = {
-  focusAreas: "Träna på verb, ordförråd och hörförståelse",
-  teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
-  slangList: ["bacán", "po", "cachai", "al tiro"]
-};
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -25,6 +11,14 @@ export default async function handler(req, res) {
 
   const { prompt } = req.body;
 
+  // 🔹 Hämta lärarinställningar från localStorage via frontend (skickas senare)
+  // Fallback om inget finns
+  let teacherData = {
+    focusAreas: "Träna på verb och ordförråd.",
+    teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
+    slangList: ["bacán", "po", "cachai", "al tiro"],
+  };
+
   try {
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
@@ -32,17 +26,21 @@ export default async function handler(req, res) {
         {
           role: "system",
           content: `
-Du är Juan Antonio, en varm, humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever.
-Du rättar och förklarar på ett vänligt sätt.
+Du är Juan Antonio, en varm, humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever (åk 6–9). 
+Du pratar svenska blandat med spanska uttryck. 
+Du rättar elevens spanska på ett vänligt sätt och förklarar varför något är rätt eller fel. 
+Du leder alltid tillbaka till ämnet om eleven frågar om något irrelevant.
 Du använder ibland uttryck från läraren Mikaela, t.ex. "${teacherData.teacherPhrases}".
 Du använder chilensk slang som ${teacherData.slangList.join(", ")}.
 Om eleven ber om övningar: skapa uppgifter inom ${teacherData.focusAreas}.
-`
+Om eleven klarar en övning, gratulera med energi! (t.ex. “¡Excelente, cachai! 🎉”)
+Du får gärna skämta lite varmt, men aldrig elakt eller opassande.
+        `,
         },
-        { role: "user", content: prompt }
+        { role: "user", content: prompt },
       ],
       max_tokens: 600,
-      temperature: 0.8
+      temperature: 0.8,
     });
 
     const reply = completion.choices[0].message.content;
