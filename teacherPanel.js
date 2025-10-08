@@ -1,57 +1,49 @@
-const focusArea = document.getElementById("focusArea");
-const saveFocus = document.getElementById("saveFocus");
-const newSlang = document.getElementById("newSlang");
-const addBtn = document.getElementById("addBtn");
-const slangList = document.getElementById("slangList");
+// === LÄRARPANEL ===
+const teacherPanel = document.getElementById("teacher-panel");
+const loginInput = document.getElementById("teacher-password");
+const loginButton = document.getElementById("teacher-login");
+const panelContent = document.getElementById("panel-content");
 
-let slangArray = [];
+const focusInput = document.getElementById("focus-input");
+const phraseInput = document.getElementById("phrase-input");
+const slangInput = document.getElementById("slang-input");
+const saveButton = document.getElementById("save-btn");
 
-// Läs in aktuella värden
-async function loadData() {
-  const res = await fetch("/api/config");
-  if (!res.ok) return;
-  const data = await res.json();
-  focusArea.value = data.focusAreas;
-  slangArray = data.slangList || [];
-  renderSlang();
-}
+let teacherData = {
+  focusAreas: "Träna på verb och ordförråd.",
+  teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
+  slangList: ["bacán", "po", "cachai", "al tiro"]
+};
 
-function renderSlang() {
-  slangList.innerHTML = "";
-  slangArray.forEach((s, i) => {
-    const li = document.createElement("li");
-    li.textContent = s;
-    const x = document.createElement("button");
-    x.textContent = "❌";
-    x.onclick = () => {
-      slangArray.splice(i, 1);
-      renderSlang();
-    };
-    li.appendChild(x);
-    slangList.appendChild(li);
-  });
-}
-
-addBtn.addEventListener("click", () => {
-  const text = newSlang.value.trim();
-  if (text) {
-    slangArray.push(text);
-    renderSlang();
-    newSlang.value = "";
+// === Logga in-lösenord ===
+loginButton.addEventListener("click", () => {
+  if (loginInput.value.trim().toLowerCase() === "mika") {
+    teacherPanel.style.display = "none";
+    panelContent.style.display = "block";
+    loadTeacherData();
+  } else {
+    alert("Fel lösenord, po 😅");
   }
 });
 
-saveFocus.addEventListener("click", async () => {
-  const body = {
-    focusAreas: focusArea.value.trim(),
-    slangList: slangArray,
-  };
-  const res = await fetch("/api/updateConfig", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  alert(res.ok ? "Uppdaterat för alla elever! 🌎" : "Något gick fel 😅");
+// === Ladda sparade inställningar ===
+function loadTeacherData() {
+  focusInput.value = teacherData.focusAreas;
+  phraseInput.value = teacherData.teacherPhrases;
+  slangInput.value = teacherData.slangList.join(", ");
+}
+
+// === Spara nya inställningar ===
+saveButton.addEventListener("click", () => {
+  teacherData.focusAreas = focusInput.value.trim();
+  teacherData.teacherPhrases = phraseInput.value.trim();
+  teacherData.slangList = slangInput.value.split(",").map(s => s.trim());
+  alert("Uppdaterat! 👏 Juan Antonio kommer använda dessa nästa gång sidan laddas.");
+  localStorage.setItem("juanTeacherData", JSON.stringify(teacherData));
 });
 
-loadData();
+// === Ladda data om det finns sparat ===
+const saved = localStorage.getItem("juanTeacherData");
+if (saved) {
+  teacherData = JSON.parse(saved);
+}
