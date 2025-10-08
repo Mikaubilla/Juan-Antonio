@@ -1,90 +1,40 @@
-// ==== Grundinställning ====
-const messagesDiv = document.getElementById("messages");
-const inputField = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
+import OpenAI from "openai";
 
-// ==== Funktion för att lägga till meddelande ====
-function addMessage(text, sender = "bot") {
-  const msg = document.createElement("div");
-  msg.classList.add("message", sender);
-  msg.innerHTML = sender === "bot"
-    ? `<img src="juan-antonio.png" class="mini-avatar" /> ${text}`
-    : `<div class="user-bubble">${text}</div>`;
-  messagesDiv.appendChild(msg);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// ==== Startmeddelande ====
-window.addEventListener("load", () => {
-  addMessage("¡Hola! Soy Juan Antonio, tu amigo cóndor. Jag är här för att hjälpa dig med spanskan. ¿Cómo te llamas y en qué curso estás?");
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-// ==== Skicka meddelanden ====
-sendBtn.addEventListener("click", sendMessage);
-inputField.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-async function sendMessage() {
-  const userText = inputField.value.trim();
-  if (!userText) return;
-
-  addMessage(userText, "user");
-  inputField.value = "";
+  const { message } = req.body;
 
   try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userText })
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `
+Du är Juan Antonio, en varm och humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever (åk 6–9).
+Du pratar svenska blandat med naturliga spanska uttryck.
+Du rättar elevens spanska, förklarar varför något är rätt eller fel och ger små övningar.
+Om eleven börjar prata om något annat, led vänligt men bestämt tillbaka till ämnet.
+Du använder ibland ord som "po", "bacán" och "cachai", och har glimten i ögat.
+          `
+        },
+        { role: "user", content: message }
+      ],
+      max_tokens: 400,
+      temperature: 0.8
     });
-    const data = await res.json();
 
-    if (data.error) throw new Error(data.error);
-    addMessage(data.reply);
+    const reply = completion.choices[0].message.content;
+    res.status(200).json({ reply });
   } catch (err) {
-    addMessage("Fel vid kontakt med servern, po 😅");
+    console.error("Server error:", err);
+    res.status(500).json({ error: "Fel vid OpenAI-anropet." });
   }
 }
-
-// ==== Fakta och uttryck (klick på bilden) ====
-const juanFacts = [
-  { es: "¿Sabías que el cóndor puede volar hasta 7000 metros?", sv: "Visste du att kondoren kan flyga upp till 7000 meter högt?" },
-  { es: "En Chile decimos 'bacán' för något som är coolt.", sv: "I Chile säger vi 'bacán' när något är coolt." },
-  { es: "‘Po’ betyder egentligen inget – vi bara säger det, po 😄", sv: "‘Po’ betyder inget, vi bara lägger till det!" },
-  { es: "Chile tiene más de 600 volcanes activos.", sv: "Chile har över 600 aktiva vulkaner." },
-  { es: "‘Cachai?’ betyder ungefär ‘fattar du?’", sv: "‘Cachai?’ = ‘förstår du?’" }
-];
-
-document.getElementById("juan-img").addEventListener("click", () => {
-  const fact = juanFacts[Math.floor(Math.random() * juanFacts.length)];
-  addMessage(`${fact.es} (${fact.sv})`);
-});
-
-// ==== Lärarpanel ====
-const teacherPanel = document.getElementById("teacher-panel");
-const teacherPassword = "condor123";
-
-document.getElementById("teacher-login").addEventListener("click", () => {
-  const passwordPrompt = prompt("Skriv lärarlösenord, po:");
-  if (passwordPrompt === teacherPassword) {
-    teacherPanel.innerHTML = `
-      <h3>Lärarpanel</h3>
-      <textarea id="teacher-note" placeholder="Skriv instruktion till Juan Antonio..."></textarea>
-      <button id="save-note">Spara</button>
-      <p id="status"></p>
-    `;
-    document.getElementById("save-note").addEventListener("click", async () => {
-      const newNote = document.getElementById("teacher-note").value;
-      const res = await fetch("/api/updateConfig", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newNote })
-      });
-      const data = await res.json();
-      document.getElementById("status").textContent = data.message || data.error;
-    });
-  } else {
-    alert("Fel lösenord, po 😅");
-  }
-});
