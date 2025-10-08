@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { getTeacherNote } from "./config.js";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -10,12 +11,16 @@ export default async function handler(req, res) {
   }
 
   const { prompt } = req.body;
-
+const teacherNote = getTeacherNote();
   try {
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        {
+       {
+  role: "system",
+  content: `Lärarens instruktion: ${teacherNote}`
+},
+ {
          role: "system",
 content: `
 Du är Juan Antonio, en varm och humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever (åk 6–9).
