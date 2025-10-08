@@ -25,6 +25,24 @@ if (condorImg) {
     addMessage("bot", `💬 <b>${random.word}</b>: ${random.meaning}`);
   });
 }
+// Fakta och uttryck som Juan Antonio säger slumpmässigt
+const juanFacts = [
+  { es: "¿Sabías que el cóndor puede volar hasta 7000 metros de altura?", sv: "Visste du att kondoren kan flyga upp till 7000 meter högt?" },
+  { es: "En Chile decimos 'bacán' för något som är coolt.", sv: "I Chile säger vi 'bacán' när något är coolt." },
+  { es: "La palabra 'familia' viene del latín.", sv: "Ordet 'familia' kommer från latin." },
+  { es: "¿Cachai? Det betyder typ 'förstår du?'", sv: "‘Cachai?’ betyder ungefär ‘fattar du?’" },
+  { es: "Chile tiene más de 600 volcanes activos.", sv: "Chile har över 600 aktiva vulkaner." },
+  { es: "‘Po’ betyder inget egentligen – vi bara lägger till det, po 😄", sv: "‘Po’ betyder inget, vi bara säger det!" }
+];
+
+// Funktion för slumpmässigt faktameddelande
+function randomJuanFact() {
+  const fact = juanFacts[Math.floor(Math.random() * juanFacts.length)];
+  addMessage(`${fact.es} (${fact.sv})`, "bot");
+}
+
+// Aktivera klick på bilden
+document.querySelector("#juan-img").addEventListener("click", randomJuanFact);
 // === Startmeddelande när sidan laddas ===
 window.addEventListener("load", () => {
   setTimeout(() => {
