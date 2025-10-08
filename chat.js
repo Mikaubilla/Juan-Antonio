@@ -150,3 +150,30 @@ function showCelebration() {
 
   setTimeout(() => confetti.remove(), 2000);
 }
+// Hantering av lärarpanelen
+const teacherPanel = document.getElementById("teacher-panel");
+const teacherPassword = "condor123"; // Byt till eget lösenord
+
+document.getElementById("teacher-login").addEventListener("click", async () => {
+  const password = document.getElementById("teacher-password").value;
+  if (password === teacherPassword) {
+    teacherPanel.innerHTML = `
+      <h3>Lärarpanel</h3>
+      <textarea id="teacher-note" placeholder="Skriv instruktion till Juan Antonio..."></textarea>
+      <button id="save-note">Spara</button>
+      <p id="status"></p>
+    `;
+    document.getElementById("save-note").addEventListener("click", async () => {
+      const newNote = document.getElementById("teacher-note").value;
+      const response = await fetch("/api/updateConfig", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newNote }),
+      });
+      const data = await response.json();
+      document.getElementById("status").textContent = data.message || data.error;
+    });
+  } else {
+    alert("Fel lösenord, po 😅");
+  }
+});
