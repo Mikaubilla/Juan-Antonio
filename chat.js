@@ -25,14 +25,12 @@ if (condorImg) {
     addMessage("bot", `💬 <b>${random.word}</b>: ${random.meaning}`);
   });
 }
-
 // === Startmeddelande när sidan laddas ===
 window.addEventListener("load", () => {
   setTimeout(() => {
-addMessage("¡Hola! Soy Juan Antonio, tu amigo cóndor. Jag är här för att hjälpa dig med spanskan. ¿Cómo te llamas y en qué curso estás?", "bot");
+    addMessage("bot", "¡Hola! Soy Juan Antonio, tu amigo cóndor. Jag är här för att hjälpa dig med spanskan. ¿Cómo te llamas y en qué curso estás?");
   }, 600);
-});
-
+})
 sendButton.addEventListener("click", sendMessage);
 inputField.addEventListener("keypress", (e) => {
   if (e.key === "Enter") sendMessage();
