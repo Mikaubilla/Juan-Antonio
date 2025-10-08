@@ -1,98 +1,118 @@
-// === CHAT FRONTEND ===
+// === chat.js (FRONTEND) ===
+// Hanterar chattens knappar, inmatning och animationer
+
 const chatContainer = document.getElementById("chat-container");
-const input = document.getElementById("user-input");
+const inputField = document.getElementById("user-input");
 const sendButton = document.getElementById("send-btn");
-const juanImage = document.getElementById("juan-image");
-const teacherBtn = document.getElementById("teacher-btn");
-const teacherPanel = document.getElementById("teacher-panel");
-const loginBtn = document.getElementById("login-btn");
-const passwordInput = document.getElementById("password");
-const teacherContent = document.getElementById("teacher-content");
-const notesInput = document.getElementById("teacher-notes");
-const saveBtn = document.getElementById("save-notes");
-const savedMsg = document.getElementById("saved-msg");
+const condorImg = document.getElementById("juan-antonio-img");
 
-// === Fakta & slang ===
-const juanData = {
-  slang: [
-    { word: "bacán", meaning: "betyder 'superbra' eller 'cool' på chilenska" },
-    { word: "po", meaning: "läggs till i slutet av meningar, ungefär som 'du vet'" },
-    { word: "cachai", meaning: "betyder 'fattar du?' eller 'hänger du med?'" },
-    { word: "al tiro", meaning: "betyder 'direkt' eller 'på en gång'" }
-  ],
-  facts: [
-    "Chile är världens längsta land från norr till söder 🇨🇱",
-    "Påskön tillhör Chile och är känd för sina stenstatyer 🗿",
-    "Chilenare älskar 'asado' – grillkvällar med familjen 🔥",
-    "I Chile säger man ofta 'po' i slutet av meningar, cachai?"
-  ]
-};
+// Enkel minneshantering för denna session
+let chatHistory = [];
+let studentData = { namn: "", arskurs: "", mal: "" };
 
-// === Klick på bilden ===
-juanImage.addEventListener("click", () => {
-  const randomType = Math.random() < 0.5 ? "slang" : "facts";
-  const list = juanData[randomType];
-  const item = list[Math.floor(Math.random() * list.length)];
-  const msg = randomType === "slang"
-    ? `💬 <b>${item.word}</b>: ${item.meaning}`
-    : `📘 ${item}`;
-  addMessage("Juan Antonio", msg);
+// Liten databas för chilenska uttryck
+const chileanSlang = [
+  { word: "po", meaning: "Ett typiskt chilenskt ord som inte betyder något särskilt – som att säga 'liksom'." },
+  { word: "bacán", meaning: "Betyder 'coolt!' eller 'grymt!' – används ofta när något är bra." },
+  { word: "cachai", meaning: "Betyder 'förstår du?' – används i vardagligt talspråk." },
+  { word: "al tiro", meaning: "Betyder 'på en gång!' eller 'direkt'." }
+];
+
+// === Klick på Juan Antonio-bilden för att visa ett slumpat slangord ===
+if (condorImg) {
+  condorImg.addEventListener("click", () => {
+    const random = chileanSlang[Math.floor(Math.random() * chileanSlang.length)];
+    alert(`${random.word.toUpperCase()}: ${random.meaning}`);
+  });
+}
+
+// === Skicka meddelande ===
+if (sendButton) {
+  sendButton.addEventListener("click", sendMessage);
+}
+
+inputField.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") sendMessage();
 });
 
-// === Lärarpanel ===
-teacherBtn.addEventListener("click", () => teacherPanel.classList.remove("hidden"));
-loginBtn.addEventListener("click", () => {
-  if (passwordInput.value === "mika") {
-    teacherContent.classList.remove("hidden");
-  } else {
-    alert("Fel lösenord!");
+async function sendMessage() {
+  const userMessage = inputField.value.trim();
+  if (!userMessage) return;
+
+  addMessage("user", userMessage);
+  inputField.value = "";
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: buildPrompt(userMessage) }),
+    });
+
+    const data = await response.json();
+    if (data.reply) {
+      addMessage("bot", data.reply);
+
+      // Om svaret innehåller "bra jobbat" eller liknande → visa firar-animation
+      if (data.reply.toLowerCase().includes("bra jobbat") || data.reply.toLowerCase().includes("rätt")) {
+        showCelebration();
+      }
+    } else {
+      addMessage("bot", "Oj! Något gick fel, po 😅 Försök igen.");
+    }
+  } catch (error) {
+    console.error(error);
+    addMessage("bot", "Fel vid kontakt med servern, po 😅");
   }
-});
+}
 
-saveBtn.addEventListener("click", () => {
-  localStorage.setItem("teacherNotes", notesInput.value);
-  savedMsg.classList.remove("hidden");
-  setTimeout(() => savedMsg.classList.add("hidden"), 2000);
-});
-
-window.addEventListener("load", () => {
-  const saved = localStorage.getItem("teacherNotes");
-  if (saved) notesInput.value = saved;
-});
-
-// === Meddelandefunktion ===
+// === Skapa meddelande-element ===
 function addMessage(sender, text) {
-  const bubble = document.createElement("div");
-  bubble.classList.add("message", sender === "user" ? "user" : "bot");
+  const message = document.createElement("div");
+  message.classList.add("message", sender);
 
-  const content = document.createElement("div");
-  content.classList.add("text");
-  content.innerHTML = text;
-  bubble.appendChild(content);
-  chatContainer.appendChild(bubble);
+  const avatar = document.createElement("img");
+  avatar.src = sender === "bot" ? "Juan Antonio (1).webp" : "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  avatar.classList.add("avatar");
+
+  const bubble = document.createElement("div");
+  bubble.classList.add("bubble");
+  bubble.innerText = text;
+
+  message.appendChild(avatar);
+  message.appendChild(bubble);
+  chatContainer.appendChild(message);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-async function sendMessage() {
-  const prompt = input.value.trim();
-  if (!prompt) return;
-  addMessage("user", prompt);
-  input.value = "";
-
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt })
-    });
-    const data = await res.json();
-    addMessage("Juan Antonio", data.reply);
-  } catch {
-    addMessage("Juan Antonio", "Oj! Något gick fel, po 😅 Försök igen.");
+// === Skapa prompt med elevens uppgifter ===
+function buildPrompt(userInput) {
+  if (!studentData.namn || !studentData.arskurs || !studentData.mal) {
+    const parts = userInput.match(/heter\s+(\w+)|(\d+an)|öva\s+på\s+(\w+)/gi);
+    if (parts) {
+      parts.forEach((p) => {
+        if (p.includes("heter")) studentData.namn = p.split("heter")[1].trim();
+        if (p.includes("an")) studentData.arskurs = p.trim();
+        if (p.includes("öva")) studentData.mal = p.split("öva på")[1].trim();
+      });
+    }
   }
+
+  const intro = `Elev: ${studentData.namn || "okänd"}, årskurs ${studentData.arskurs || "?"}, vill öva på ${studentData.mal || "spanska"}.`;
+  return `${intro}\n${userInput}`;
 }
 
-sendButton.addEventListener("click", sendMessage);
-input.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
+// === Fira-animation när eleven klarat något ===
+function showCelebration() {
+  const confetti = document.createElement("div");
+  confetti.innerHTML = "🎉 ¡Bacán! 🎉";
+  confetti.style.position = "fixed";
+  confetti.style.top = "40%";
+  confetti.style.left = "50%";
+  confetti.style.transform = "translate(-50%, -50%)";
+  confetti.style.fontSize = "2rem";
+  confetti.style.animation = "fadeOut 2s forwards";
+  document.body.appendChild(confetti);
+
+  setTimeout(() => confetti.remove(), 2000);
+}
