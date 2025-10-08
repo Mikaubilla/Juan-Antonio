@@ -27,5 +27,26 @@
     </div>
 
     <script src="chat.js"></script>
+<!-- === LÄRARPANEL === -->
+<div id="teacher-panel" class="teacher-box">
+  <h3>👩‍🏫 Lärarpanel</h3>
+  <p>Ange lösenord för att öppna:</p>
+  <input type="password" id="teacher-password" placeholder="Lösenord..." />
+  <button id="teacher-login">Öppna</button>
+</div>
+
+<div id="panel-content" class="teacher-box" style="display: none;">
+  <h3>⚙️ Inställningar för Juan Antonio</h3>
+  <label>Fokusområden</label>
+  <textarea id="focus-input" rows="2"></textarea>
+
+  <label>Uttryck från läraren Mikaela</label>
+  <input type="text" id="phrase-input" />
+
+  <label>Slanguttryck (komma-separerade)</label>
+  <input type="text" id="slang-input" />
+
+  <button id="save-btn">Spara inställningar</button>
+</div>
   </body>
 </html>
