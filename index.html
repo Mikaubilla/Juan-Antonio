@@ -1,52 +1,42 @@
 <!DOCTYPE html>
 <html lang="sv">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Juan Antonio – din spanska handledare</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juan Antonio – Spansk handledare 🇨🇱</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <img src="Juan Antonio (1).webp" id="juan-image" class="portrait" alt="Juan Antonio">
+      <h2>Juan Antonio, tu amigo cóndor! 🦅</h2>
+      <button id="teacher-btn">Lärarpanel</button>
+    </div>
 
-  <body>
-    <div id="main">
-      <h1>🇨🇱 Juan Antonio</h1>
-      <p class="subtitle">Din spanska handledare och vän <em>(tu amigo cóndor)</em></p>
-
-      <div id="chatBox" class="chat-box"></div>
-
+    <div class="chat-section">
+      <div id="chat-container" class="chat-box"></div>
       <div class="input-area">
-        <input id="input" type="text" placeholder="Skriv här..." />
-        <button id="sendBtn">Skicka</button>
+        <input id="user-input" placeholder="Skriv här..." />
+        <button id="send-btn">Skicka</button>
       </div>
     </div>
+  </div>
 
-    <div id="juanSide">
-      <img id="juanImage" src="Juan Antonio (1).webp" alt="Juan Antonio" />
-      <p><strong>Juan Antonio, tu amigo cóndor!</strong></p>
-      <button id="teacherPanelBtn">Lärarpanel</button>
+  <div id="teacher-panel" class="hidden">
+    <div class="panel-box">
+      <h3>Lärarpanel</h3>
+      <label for="password">Lösenord:</label>
+      <input type="password" id="password" />
+      <button id="login-btn">Logga in</button>
+      <div id="teacher-content" class="hidden">
+        <textarea id="teacher-notes" placeholder="Skriv fokusområden, instruktioner mm..."></textarea>
+        <button id="save-notes">Spara</button>
+        <p id="saved-msg" class="hidden">Sparat! 💾</p>
+      </div>
     </div>
+  </div>
 
-    <script src="chat.js"></script>
-<!-- === LÄRARPANEL === -->
-<div id="teacher-panel" class="teacher-box">
-  <h3>👩‍🏫 Lärarpanel</h3>
-  <p>Ange lösenord för att öppna:</p>
-  <input type="password" id="teacher-password" placeholder="Lösenord..." />
-  <button id="teacher-login">Öppna</button>
-</div>
-
-<div id="panel-content" class="teacher-box" style="display: none;">
-  <h3>⚙️ Inställningar för Juan Antonio</h3>
-  <label>Fokusområden</label>
-  <textarea id="focus-input" rows="2"></textarea>
-
-  <label>Uttryck från läraren Mikaela</label>
-  <input type="text" id="phrase-input" />
-
-  <label>Slanguttryck (komma-separerade)</label>
-  <input type="text" id="slang-input" />
-
-  <button id="save-btn">Spara inställningar</button>
-</div>
-  </body>
+  <script src="chat.js"></script>
+</body>
 </html>
