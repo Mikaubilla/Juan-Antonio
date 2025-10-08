@@ -1,14 +1,17 @@
 const slangList = document.getElementById("slangList");
 const newSlang = document.getElementById("newSlang");
 const addBtn = document.getElementById("addBtn");
+const focusArea = document.getElementById("focusArea");
+const saveFocus = document.getElementById("saveFocus");
 
-// 🔸 Ladda sparade slanguttryck vid start
+// 🔸 Ladda sparat innehåll
 window.addEventListener("load", () => {
-  const saved = JSON.parse(localStorage.getItem("slangList")) || [];
-  saved.forEach((item) => addSlangItem(item));
+  const savedSlang = JSON.parse(localStorage.getItem("slangList")) || [];
+  savedSlang.forEach((item) => addSlangItem(item));
+  focusArea.value = localStorage.getItem("focusAreas") || "";
 });
 
-// 🔸 Lägg till nytt slangord
+// 🔸 Lägg till slang
 addBtn.addEventListener("click", () => {
   const text = newSlang.value.trim();
   if (text) {
@@ -18,12 +21,11 @@ addBtn.addEventListener("click", () => {
   }
 });
 
-// 🔸 Funktion för att skapa listobjekt
+// 🔸 Lägg till listobjekt
 function addSlangItem(text) {
   const li = document.createElement("li");
   li.textContent = text;
 
-  // knapp för att ta bort
   const removeBtn = document.createElement("button");
   removeBtn.textContent = "❌";
   removeBtn.classList.add("remove-btn");
@@ -36,10 +38,17 @@ function addSlangItem(text) {
   slangList.appendChild(li);
 }
 
-// 🔸 Spara listan i localStorage
+// 🔸 Spara slang i localStorage
 function saveSlangList() {
   const items = Array.from(slangList.children).map((li) =>
     li.firstChild.textContent
   );
   localStorage.setItem("slangList", JSON.stringify(items));
 }
+
+// 🔸 Spara fokusområde
+saveFocus.addEventListener("click", () => {
+  const focus = focusArea.value.trim();
+  localStorage.setItem("focusAreas", focus);
+  alert("Fokusområden uppdaterade, po! 😎");
+});
