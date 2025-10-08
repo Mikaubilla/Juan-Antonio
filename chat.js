@@ -4,6 +4,9 @@ const sendBtn = document.getElementById("sendBtn");
 const juanImage = document.getElementById("juanImage");
 const teacherPanelBtn = document.getElementById("teacherPanelBtn");
 
+// 🔸 Hämta lärarens fokus från localStorage
+let focusAreas = localStorage.getItem("focusAreas") || "";
+
 sendBtn.addEventListener("click", sendMessage);
 input.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
@@ -28,11 +31,16 @@ function addMessage(sender, text) {
     msg.appendChild(content);
   } else {
     msg.appendChild(content);
-    msg.appendChild(icon.cloneNode(true)); // liten spegelvänd ikon
   }
 
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
+
+  // 🔸 Fira om eleven skrivit "klart", "färdig", "yay" eller "¡listo!"
+  const celebrateWords = ["klart", "färdig", "yay", "¡listo!", "rätt"];
+  if (celebrateWords.some((w) => text.toLowerCase().includes(w))) {
+    showCelebration();
+  }
 }
 
 async function sendMessage() {
@@ -46,7 +54,7 @@ async function sendMessage() {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: text }),
+      body: JSON.stringify({ prompt: text, focus: focusAreas }),
     });
 
     const data = await res.json();
@@ -97,3 +105,13 @@ teacherPanelBtn.addEventListener("click", () => {
     alert("Fel lösenord, po 😅");
   }
 });
+
+// 🔸 Konfettianimation
+function showCelebration() {
+  const confetti = document.createElement("div");
+  confetti.classList.add("confetti");
+  confetti.innerHTML = "🎉🇨🇱🎊 ¡Bacán!";
+  document.body.appendChild(confetti);
+
+  setTimeout(() => confetti.remove(), 3000);
+}
