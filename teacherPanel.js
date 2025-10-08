@@ -1,54 +1,57 @@
-const slangList = document.getElementById("slangList");
-const newSlang = document.getElementById("newSlang");
-const addBtn = document.getElementById("addBtn");
 const focusArea = document.getElementById("focusArea");
 const saveFocus = document.getElementById("saveFocus");
+const newSlang = document.getElementById("newSlang");
+const addBtn = document.getElementById("addBtn");
+const slangList = document.getElementById("slangList");
 
-// 🔸 Ladda sparat innehåll
-window.addEventListener("load", () => {
-  const savedSlang = JSON.parse(localStorage.getItem("slangList")) || [];
-  savedSlang.forEach((item) => addSlangItem(item));
-  focusArea.value = localStorage.getItem("focusAreas") || "";
-});
+let slangArray = [];
 
-// 🔸 Lägg till slang
+// Läs in aktuella värden
+async function loadData() {
+  const res = await fetch("/api/config");
+  if (!res.ok) return;
+  const data = await res.json();
+  focusArea.value = data.focusAreas;
+  slangArray = data.slangList || [];
+  renderSlang();
+}
+
+function renderSlang() {
+  slangList.innerHTML = "";
+  slangArray.forEach((s, i) => {
+    const li = document.createElement("li");
+    li.textContent = s;
+    const x = document.createElement("button");
+    x.textContent = "❌";
+    x.onclick = () => {
+      slangArray.splice(i, 1);
+      renderSlang();
+    };
+    li.appendChild(x);
+    slangList.appendChild(li);
+  });
+}
+
 addBtn.addEventListener("click", () => {
   const text = newSlang.value.trim();
   if (text) {
-    addSlangItem(text);
-    saveSlangList();
+    slangArray.push(text);
+    renderSlang();
     newSlang.value = "";
   }
 });
 
-// 🔸 Lägg till listobjekt
-function addSlangItem(text) {
-  const li = document.createElement("li");
-  li.textContent = text;
-
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "❌";
-  removeBtn.classList.add("remove-btn");
-  removeBtn.onclick = () => {
-    li.remove();
-    saveSlangList();
+saveFocus.addEventListener("click", async () => {
+  const body = {
+    focusAreas: focusArea.value.trim(),
+    slangList: slangArray,
   };
-
-  li.appendChild(removeBtn);
-  slangList.appendChild(li);
-}
-
-// 🔸 Spara slang i localStorage
-function saveSlangList() {
-  const items = Array.from(slangList.children).map((li) =>
-    li.firstChild.textContent
-  );
-  localStorage.setItem("slangList", JSON.stringify(items));
-}
-
-// 🔸 Spara fokusområde
-saveFocus.addEventListener("click", () => {
-  const focus = focusArea.value.trim();
-  localStorage.setItem("focusAreas", focus);
-  alert("Fokusområden uppdaterade, po! 😎");
+  const res = await fetch("/api/updateConfig", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  alert(res.ok ? "Uppdaterat för alla elever! 🌎" : "Något gick fel 😅");
 });
+
+loadData();
