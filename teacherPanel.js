@@ -1,49 +1,44 @@
-// === LÄRARPANEL ===
-const teacherPanel = document.getElementById("teacher-panel");
-const loginInput = document.getElementById("teacher-password");
-const loginButton = document.getElementById("teacher-login");
-const panelContent = document.getElementById("panel-content");
+const PASSWORD = "mika"; // ditt lösenord
 
-const focusInput = document.getElementById("focus-input");
-const phraseInput = document.getElementById("phrase-input");
-const slangInput = document.getElementById("slang-input");
-const saveButton = document.getElementById("save-btn");
+const panel = document.createElement("div");
+panel.className = "teacher-panel";
+panel.innerHTML = `
+  <div id="login-section">
+    <h3>Lärarpanel</h3>
+    <input type="password" id="password" placeholder="Lösenord">
+    <button id="login-btn">Logga in</button>
+  </div>
+  <div id="panel-content" style="display:none;">
+    <h3>Inställningar</h3>
+    <label>Fokusera extra på:</label><br/>
+    <textarea id="focus-area" rows="4" cols="40" placeholder="Ex: Perfekt, ordföljd, artighetsfraser..."></textarea><br/>
+    <button id="save-btn">Spara</button>
+    <p id="saved-msg" style="color:green; display:none;">Sparat!</p>
+  </div>
+`;
+document.body.appendChild(panel);
 
-let teacherData = {
-  focusAreas: "Träna på verb och ordförråd.",
-  teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
-  slangList: ["bacán", "po", "cachai", "al tiro"]
-};
-
-// === Logga in-lösenord ===
-loginButton.addEventListener("click", () => {
-  if (loginInput.value.trim().toLowerCase() === "mika") {
-    teacherPanel.style.display = "none";
-    panelContent.style.display = "block";
-    loadTeacherData();
+document.getElementById("login-btn").addEventListener("click", () => {
+  const pw = document.getElementById("password").value;
+  if (pw === PASSWORD) {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("panel-content").style.display = "block";
   } else {
     alert("Fel lösenord, po 😅");
   }
 });
 
-// === Ladda sparade inställningar ===
-function loadTeacherData() {
-  focusInput.value = teacherData.focusAreas;
-  phraseInput.value = teacherData.teacherPhrases;
-  slangInput.value = teacherData.slangList.join(", ");
-}
-
-// === Spara nya inställningar ===
-saveButton.addEventListener("click", () => {
-  teacherData.focusAreas = focusInput.value.trim();
-  teacherData.teacherPhrases = phraseInput.value.trim();
-  teacherData.slangList = slangInput.value.split(",").map(s => s.trim());
-  alert("Uppdaterat! 👏 Juan Antonio kommer använda dessa nästa gång sidan laddas.");
-  localStorage.setItem("juanTeacherData", JSON.stringify(teacherData));
+document.getElementById("save-btn").addEventListener("click", () => {
+  const focus = document.getElementById("focus-area").value;
+  localStorage.setItem("teacherFocus", focus);
+  document.getElementById("saved-msg").style.display = "block";
+  setTimeout(() => (document.getElementById("saved-msg").style.display = "none"), 2000);
 });
 
-// === Ladda data om det finns sparat ===
-const saved = localStorage.getItem("juanTeacherData");
-if (saved) {
-  teacherData = JSON.parse(saved);
-}
+// Skicka fokusinfo till chatten när sidan laddas
+window.addEventListener("load", () => {
+  const focus = localStorage.getItem("teacherFocus");
+  if (focus) {
+    appendMessage("juan", `Mikaela har sagt att jag ska fokusera extra på: ${focus}. Vamos, po! 💪`);
+  }
+});
