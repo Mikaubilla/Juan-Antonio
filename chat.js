@@ -1,3 +1,10 @@
+// Hämta inställningar från lärarpanelen
+let storedTeacherData = localStorage.getItem("juanTeacherData");
+let teacherData = storedTeacherData ? JSON.parse(storedTeacherData) : {
+  focusAreas: "Träna på verb och ordförråd.",
+  teacherPhrases: "Mikaela skulle säga 'Cristo bendito!' 😂",
+  slangList: ["bacán", "po", "cachai", "al tiro"]
+};
 // === CHAT FRONTEND ===
 const chatContainer = document.getElementById("chat-container");
 const input = document.getElementById("user-input");
