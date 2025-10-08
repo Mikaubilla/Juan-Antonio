@@ -29,10 +29,7 @@ if (condorImg) {
 // === Startmeddelande när sidan laddas ===
 window.addEventListener("load", () => {
   setTimeout(() => {
-    addMessage(
-      "bot",
-      "¡Hola! Yo soy Juan Antonio, tu amigo cóndor. 🇨🇱 Jag är här för att hjälpa dig med spanskan. <br><br>Como te llamas y en qué curso estás?"
-    );
+addMessage("¡Hola! Soy Juan Antonio, tu amigo cóndor. Jag är här för att hjälpa dig med spanskan. ¿Cómo te llamas y en qué curso estás?", "bot");
   }, 600);
 });
 
