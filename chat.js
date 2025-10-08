@@ -4,14 +4,26 @@ const sendBtn = document.getElementById("sendBtn");
 const juanImage = document.getElementById("juanImage");
 const teacherPanelBtn = document.getElementById("teacherPanelBtn");
 
-// 🔸 Hämta lärarens fokus från localStorage
-let focusAreas = localStorage.getItem("focusAreas") || "";
+// 🔸 Hämtar global fokus från servern (simulerat just nu)
+let globalFocus = localStorage.getItem("focusAreas") || "Inga särskilda fokus just nu.";
+
+// 🔸 Minnesdata för aktuell elev (lagras bara under denna chatt)
+let student = JSON.parse(sessionStorage.getItem("student")) || null;
 
 sendBtn.addEventListener("click", sendMessage);
 input.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     sendMessage();
+  }
+});
+
+// 🔸 Startar chatten med första fråga om elevens namn och årskurs
+window.addEventListener("load", () => {
+  if (!student) {
+    addMessage("juan", "¡Hola! Vad heter du, vilken årskurs går du i och vad vill du öva på idag?");
+  } else {
+    addMessage("juan", `¡Hola de nuevo ${student.name}! Hur går det i åk ${student.grade}?`);
   }
 });
 
@@ -36,7 +48,6 @@ function addMessage(sender, text) {
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 
-  // 🔸 Fira om eleven skrivit "klart", "färdig", "yay" eller "¡listo!"
   const celebrateWords = ["klart", "färdig", "yay", "¡listo!", "rätt"];
   if (celebrateWords.some((w) => text.toLowerCase().includes(w))) {
     showCelebration();
@@ -50,11 +61,32 @@ async function sendMessage() {
   addMessage("user", text);
   input.value = "";
 
+  // 🔸 Om ingen elevdata finns – försök tolka svaret som introduktion
+  if (!student) {
+    const match = text.match(/([A-Za-zåäöÅÄÖ]+).*?(?:åk|årskurs)?\s*(\d+)/i);
+    if (match) {
+      student = {
+        name: match[1],
+        grade: match[2],
+        topic: text.split(" ").slice(2).join(" ") || "spanska generellt"
+      };
+      sessionStorage.setItem("student", JSON.stringify(student));
+      addMessage("juan", `Encantado, ${student.name}! 😄 Du går i åk ${student.grade}, jag hjälper dig gärna med ${student.topic}.`);
+      return;
+    } else {
+      addMessage("juan", "Förlåt po, jag tror jag missade – vad heter du och vilken årskurs går du i?");
+      return;
+    }
+  }
+
   try {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: text, focus: focusAreas }),
+      body: JSON.stringify({
+        prompt: `${student.name} i åk ${student.grade} säger: ${text}`,
+        focus: globalFocus
+      }),
     });
 
     const data = await res.json();
@@ -70,48 +102,5 @@ async function sendMessage() {
   }
 }
 
-// 🔸 Slang och fakta på klick
-juanImage.addEventListener("click", () => {
-  const slump = Math.random();
-  if (slump < 0.5) {
-    const slang = [
-      "¡Qué bacán! – betyder 'så coolt!' 😎",
-      "¡La raja! – betyder 'superbra!'",
-      "¡Po! – används för att förstärka, typ 'ju'.",
-      "¡Cachai! – betyder 'fattar du?'.",
-      "¡Fome! – betyder 'tråkigt'.",
-      "¡Al tiro! – betyder 'på en gång!'"
-    ];
-    addMessage("juan", slang[Math.floor(Math.random() * slang.length)]);
-  } else {
-    const fakta = [
-      "Visste du att Chile har världens längsta kustlinje?",
-      "I Spanien äter man middag runt klockan 22!",
-      "Selena Gomez har mexikanska rötter 🇲🇽",
-      "Shakira började sjunga som barn i Colombia 🎤",
-      "Lionel Messi pratar spanska med argentinsk dialekt 🇦🇷",
-      "I Peru ligger Machu Picchu – ett underverk!"
-    ];
-    addMessage("juan", fakta[Math.floor(Math.random() * fakta.length)]);
-  }
-});
-
-// 🔸 Lärarpanel
-teacherPanelBtn.addEventListener("click", () => {
-  const password = prompt("Ange lärarlösenord:");
-  if (password === "mika") {
-    window.location.href = "teacherPanel.html";
-  } else {
-    alert("Fel lösenord, po 😅");
-  }
-});
-
-// 🔸 Konfettianimation
-function showCelebration() {
-  const confetti = document.createElement("div");
-  confetti.classList.add("confetti");
-  confetti.innerHTML = "🎉🇨🇱🎊 ¡Bacán!";
-  document.body.appendChild(confetti);
-
-  setTimeout(() => confetti.remove(), 3000);
-}
+// 🔸 Slang + fakta
+juanImage.addEventLi
