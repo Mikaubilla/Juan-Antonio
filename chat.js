@@ -1,36 +1,42 @@
 // === chat.js (FRONTEND) ===
-// Hanterar chattens knappar, inmatning och animationer
+// Hanterar chatt, klick på Juan Antonio, lärarhälsning och animationer
 
 const chatContainer = document.getElementById("chat-container");
 const inputField = document.getElementById("user-input");
 const sendButton = document.getElementById("send-btn");
 const condorImg = document.getElementById("juan-antonio-img");
 
-// Enkel minneshantering för denna session
+// Minneshantering per session
 let chatHistory = [];
-let studentData = { namn: "", arskurs: "", mal: "" };
+let studentData = { namn: "", arskurs: "", fokus: "" };
 
 // Liten databas för chilenska uttryck
 const chileanSlang = [
-  { word: "po", meaning: "Ett typiskt chilenskt ord som inte betyder något särskilt – som att säga 'liksom'." },
+  { word: "po", meaning: "Ett typiskt chilenskt ord som inte betyder något särskilt – som 'liksom'." },
   { word: "bacán", meaning: "Betyder 'coolt!' eller 'grymt!' – används ofta när något är bra." },
-  { word: "cachai", meaning: "Betyder 'förstår du?' – används i vardagligt talspråk." },
+  { word: "cachai", meaning: "Betyder 'förstår du?' – vanligt i vardagligt talspråk." },
   { word: "al tiro", meaning: "Betyder 'på en gång!' eller 'direkt'." }
 ];
 
-// === Klick på Juan Antonio-bilden för att visa ett slumpat slangord ===
+// === Klick på Juan Antonio-bilden: slumpmässig slang/fakta ===
 if (condorImg) {
   condorImg.addEventListener("click", () => {
     const random = chileanSlang[Math.floor(Math.random() * chileanSlang.length)];
-    alert(`${random.word.toUpperCase()}: ${random.meaning}`);
+    addMessage("bot", `💬 <b>${random.word}</b>: ${random.meaning}`);
   });
 }
 
-// === Skicka meddelande ===
-if (sendButton) {
-  sendButton.addEventListener("click", sendMessage);
-}
+// === Startmeddelande när sidan laddas ===
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    addMessage(
+      "bot",
+      "¡Hola! Yo soy Juan Antonio, tu amigo cóndor. 🇨🇱 Jag är här för att hjälpa dig med spanskan. <br><br>Como te llamas y en qué curso estás?"
+    );
+  }, 600);
+});
 
+sendButton.addEventListener("click", sendMessage);
 inputField.addEventListener("keypress", (e) => {
   if (e.key === "Enter") sendMessage();
 });
@@ -42,6 +48,9 @@ async function sendMessage() {
   addMessage("user", userMessage);
   inputField.value = "";
 
+  // Analysera elevens svar för namn, årskurs eller fokus
+  updateStudentData(userMessage);
+
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -52,8 +61,6 @@ async function sendMessage() {
     const data = await response.json();
     if (data.reply) {
       addMessage("bot", data.reply);
-
-      // Om svaret innehåller "bra jobbat" eller liknande → visa firar-animation
       if (data.reply.toLowerCase().includes("bra jobbat") || data.reply.toLowerCase().includes("rätt")) {
         showCelebration();
       }
@@ -66,18 +73,21 @@ async function sendMessage() {
   }
 }
 
-// === Skapa meddelande-element ===
+// === Lagra meddelanden ===
 function addMessage(sender, text) {
   const message = document.createElement("div");
   message.classList.add("message", sender);
 
   const avatar = document.createElement("img");
-  avatar.src = sender === "bot" ? "Juan Antonio (1).webp" : "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+  avatar.src =
+    sender === "bot"
+      ? "Juan Antonio (1).webp"
+      : "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   avatar.classList.add("avatar");
 
   const bubble = document.createElement("div");
   bubble.classList.add("bubble");
-  bubble.innerText = text;
+  bubble.innerHTML = text;
 
   message.appendChild(avatar);
   message.appendChild(bubble);
@@ -85,27 +95,38 @@ function addMessage(sender, text) {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// === Skapa prompt med elevens uppgifter ===
-function buildPrompt(userInput) {
-  if (!studentData.namn || !studentData.arskurs || !studentData.mal) {
-    const parts = userInput.match(/heter\s+(\w+)|(\d+an)|öva\s+på\s+(\w+)/gi);
-    if (parts) {
-      parts.forEach((p) => {
-        if (p.includes("heter")) studentData.namn = p.split("heter")[1].trim();
-        if (p.includes("an")) studentData.arskurs = p.trim();
-        if (p.includes("öva")) studentData.mal = p.split("öva på")[1].trim();
-      });
-    }
-  }
+// === Identifiera namn, årskurs och fokus från elevens text ===
+function updateStudentData(text) {
+  const nameMatch = text.match(/jag heter\s+([A-Za-zÅÄÖåäö]+)/i);
+  const yearMatch = text.match(/årskurs\s*(\d+)/i);
+  const focusMatch = text.match(/öva\s+(?:på\s+)?([A-Za-zÅÄÖåäö\s]+)/i);
 
-  const intro = `Elev: ${studentData.namn || "okänd"}, årskurs ${studentData.arskurs || "?"}, vill öva på ${studentData.mal || "spanska"}.`;
-  return `${intro}\n${userInput}`;
+  if (nameMatch) studentData.namn = nameMatch[1];
+  if (yearMatch) studentData.arskurs = yearMatch[1];
+  if (focusMatch) studentData.fokus = focusMatch[1].trim();
 }
 
-// === Fira-animation när eleven klarat något ===
+// === Bygg prompt till OpenAI (inkl. elevdata) ===
+function buildPrompt(userInput) {
+  const intro = `
+Elev: ${studentData.namn || "okänd"}, årskurs ${studentData.arskurs || "?"}.
+Vill öva på ${studentData.fokus || "spanska generellt"}.
+`;
+
+  const instruktioner = `
+Du är Juan Antonio, en varm, humoristisk chilensk handledare som undervisar spanska för svenska högstadieelever (åk 6–9). 
+Du svarar delvis på svenska och blandar in spanska ord och uttryck naturligt. 
+Du rättar elevens spanska, förklarar varför något är rätt eller fel, och föreslår alltid en kort övning kopplad till det eleven vill träna på. 
+Om eleven börjar prata om något orelaterat, led tillbaka med humor, t.ex. “Haha, det där är inte español, po 😅 ska vi prata om verb istället?”.
+`;
+
+  return `${instruktioner}\n${intro}\nElevens meddelande: ${userInput}`;
+}
+
+// === Fira-animation när eleven klarar något ===
 function showCelebration() {
   const confetti = document.createElement("div");
-  confetti.innerHTML = "🎉 ¡Bacán! 🎉";
+  confetti.innerHTML = "🎉 ¡Excelente! 🎉";
   confetti.style.position = "fixed";
   confetti.style.top = "40%";
   confetti.style.left = "50%";
