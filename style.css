@@ -115,3 +115,30 @@ body {
 #sendBtn:hover {
   background-color: #3e8e41;
 }
+.remove-btn {
+  margin-left: 8px;
+  background-color: #ffb3b3;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+
+.remove-btn:hover {
+  background-color: #ff8080;
+}
+
+#slangList {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#slangList li {
+  background-color: #f1f8e9;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin: 0.4rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
