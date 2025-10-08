@@ -20,9 +20,19 @@ export default async function handler(req, res) {
     slangList: ["bacán", "po", "cachai", "al tiro"],
   };
 
+  // Validera prompt
+  if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
+    return res.status(400).json({ error: "Prompt saknas eller är felaktig." });
+  }
+
+  // Kontrollera att API-nyckeln finns
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(500).json({ error: "OpenAI API-nyckel saknas på servern." });
+  }
+
   try {
     const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o", // Ändrad till giltig modell
       messages: [
         {
           role: "system",
@@ -36,7 +46,7 @@ Du använder chilensk slang som ${teacherData.slangList.join(", ")}.
 Om eleven ber om övningar: skapa uppgifter inom ${teacherData.focusAreas}.
 Om eleven klarar en övning, gratulera med energi! (t.ex. “¡Excelente, cachai! 🎉”)
 Du får gärna skämta lite varmt, men aldrig elakt eller opassande.
-        `,
+          `,
         },
         { role: "user", content: prompt },
       ],
@@ -48,6 +58,8 @@ Du får gärna skämta lite varmt, men aldrig elakt eller opassande.
     res.status(200).json({ reply });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ error: "Något gick fel vid OpenAI-anropet." });
+    // Skicka felmeddelande från OpenAI om det finns, annars generiskt
+    const errorMsg = error?.response?.data?.error?.message || error.message || "Något gick fel vid OpenAI-anropet.";
+    res.status(500).json({ error: errorMsg });
   }
 }
