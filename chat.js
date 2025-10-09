@@ -139,4 +139,44 @@ document.getElementById("save-btn").addEventListener("click", () => {
     setTimeout(() => (document.getElementById("saved-msg").style.display = "none"), 1500);
     appendMessage("juan", `Mikaela har sagt att jag ska fokusera extra på: ${focus}. Vamos, po! 💪`);
   }
+// ===========================
+// 🎉 Fira eleven när övningen är klar
+// ===========================
+
+// Funktion för att skapa konfetti
+function celebrate() {
+  const confettiContainer = document.createElement("div");
+  confettiContainer.className = "confetti-container";
+  document.body.appendChild(confettiContainer);
+
+  for (let i = 0; i < 60; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.animationDelay = Math.random() * 2 + "s";
+    confettiContainer.appendChild(confetti);
+  }
+
+  // Juan Antonio gratulerar
+  appendMessage("juan", "¡Excelente trabajo, po! 🎉 Eres seco, cachai!");
+
+  // Ta bort konfettin efter 4 sekunder
+  setTimeout(() => confettiContainer.remove(), 4000);
+}
+
+// Lyssna efter nyckelord i chatten
+function checkForCelebration(text) {
+  const lower = text.toLowerCase();
+  const triggers = ["klar", "färdig", "gjort", "avslutat", "jag lyckades"];
+  if (triggers.some((word) => lower.includes(word))) {
+    celebrate();
+  }
+}
+
+// Lägg till i slutet av sendMessage()
+const originalAppend = appendMessage;
+appendMessage = function (sender, text) {
+  originalAppend(sender, text);
+  if (sender === "user") checkForCelebration(text);
+};
 });
