@@ -1,9 +1,12 @@
 {
   "name": "juan-antonio",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "type": "module",
+  "description": "Juan Antonio – din chilenska handledare i spanska 🦅",
+  "main": "index.html",
+  "scripts": {
+    "start": "vercel dev",
+    "build": "echo 'Static project, no build step needed'"
+  },
   "dependencies": {
     "openai": "^4.0.0"
   }
