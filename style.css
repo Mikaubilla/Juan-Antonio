@@ -1,161 +1,100 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f9fdf9;
+  font-family: "Inter", sans-serif;
+  background: #f7fdf9;
   margin: 0;
-  display: flex;
-  height: 100vh;
+  padding: 0;
 }
 
-.container {
-  display: flex;
-  width: 100%;
+#chat-box {
+  width: 80%;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  height: 70vh;
 }
 
-.sidebar {
-  width: 30%;
+.user-msg, .juan-msg {
+  margin: 10px 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.user-msg p, .juan-msg p {
+  padding: 10px 16px;
+  border-radius: 16px;
+  max-width: 70%;
+}
+
+.user-msg p {
   background: #e8f5e9;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  margin-left: auto;
 }
 
-.portrait {
-  width: 150px;
+.juan-msg p {
+  background: #fff3e0;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  margin-right: 10px;
   cursor: pointer;
 }
 
-.chat-section {
-  width: 70%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.chat-box {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-.message {
-  display: flex;
-  margin: 0.5rem 0;
-}
-
-.message.user {
-  justify-content: flex-end;
-}
-
-.message.bot {
-  justify-content: flex-start;
-}
-
-.message .text {
-  background: #dcedc8;
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  max-width: 60%;
-}
-
-.message.user .text {
-  background: #aed581;
-}
-
-.input-area {
-  display: flex;
-  padding: 1rem;
-  background: #fff;
-  border-top: 1px solid #ccc;
-}
-
-input {
-  flex: 1;
-  padding: 0.6rem;
+.teacher-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffff;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+  display: none;
 }
 
 button {
-  margin-left: 0.5rem;
-  padding: 0.6rem 1rem;
+  background-color: #66bb6a;
   border: none;
-  background: #66bb6a;
   color: white;
-  border-radius: 5px;
+  border-radius: 6px;
+  padding: 6px 12px;
   cursor: pointer;
 }
-
-button:hover {
-  background: #57a65d;
-}
-
-/* Lärarpanel */
-#teacher-panel {
+.confetti-container {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.hidden { display: none; }
-
-.panel-box {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  width: 350px;
-}
-
-#teacher-notes {
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 150px;
-  margin-top: 0.5rem;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999;
 }
 
-#saved-msg {
-  color: green;
-  font-weight: bold;
-  margin-top: 0.5rem;
-}
-/* === Meddelanden i chatten === */
-.message {
-  display: flex;
-  align-items: flex-start;
-  margin: 10px 0;
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: hsl(var(--hue, 0), 70%, 60%);
+  animation: fall 3s linear infinite;
 }
 
-.message.user {
-  justify-content: flex-end;
-}
-
-.message.bot {
-  justify-content: flex-start;
-}
-
-/* === Avatar (profilbild vid varje meddelande) === */
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-}
-
-/* === Pratbubbla === */
-.bubble {
-  background-color: #e8f5e9;
-  padding: 10px 14px;
-  border-radius: 12px;
-  max-width: 65%;
-  font-size: 15px;
-  line-height: 1.4;
-  word-wrap: break-word;
-}
-
-.message.user .bubble {
-  background-color: #c8e6c9;
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
 }
